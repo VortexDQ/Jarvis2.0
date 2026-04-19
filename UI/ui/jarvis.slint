@@ -1,0 +1,252 @@
+import { Text, Rectangle, VerticalLayout, HorizontalLayout, TouchArea, Timer, ZStack } from "std-widgets.slint";
+
+export component JarvisUI inherits Window {
+    width: 640px;
+    height: 720px;
+    title: "Jarvis Command Console";
+    no-frame: true;
+    background: transparent;
+    always-on-top: true;
+
+    callback mute_pressed();
+    callback access_pc_pressed();
+    property<bool> pc_access_enabled: false;
+    property<bool> system_muted: false;
+    property<bool> is_speaking: false;
+    property<int> pulse: 0;
+    property<int> mouse_x: 0;
+    property<int> mouse_y: 0;
+    property<bool> is_dragging: false;
+
+    Timer {
+        interval: 40ms;
+        running: true;
+        on_timeout: {
+            root.pulse = (root.pulse + 1) % 100;
+        }
+    }
+
+    Rectangle {
+        anchors.fill: parent;
+        border-radius: 32px;
+        background: @linear-gradient(180deg, #061226 0%, #08192c 45%, #03111f 100%);
+        border-width: 1px;
+        border-color: #00d4ff33;
+        drop-shadow-blur: 32px;
+        drop-shadow-color: #00bfff44;
+
+        VerticalLayout {
+            anchors.fill: parent;
+            margin: 24px;
+            spacing: 18px;
+
+            HorizontalLayout {
+                spacing: 12px;
+                Text {
+                    text: "JARVIS";
+                    font-size: 28px;
+                    font-weight: bold;
+                    color: #c3f8ff;
+                }
+                Text {
+                    text: "AI CORE";
+                    font-size: 12px;
+                    color: #8ad8ff;
+                    vertical-alignment: center;
+                    opacity: 0.8;
+                }
+                Rectangle {
+                    width: 170px;
+                    height: 34px;
+                    border-radius: 18px;
+                    background: root.pc_access_enabled ? #062f20 : #2c1030;
+                    border-width: 1px;
+                    border-color: root.pc_access_enabled ? #5cffb2 : #a865ff;
+                    Text {
+                        anchors.center_in: parent;
+                        text: root.pc_access_enabled ? "PC ACCESS ONLINE" : "PC ACCESS OFFLINE";
+                        font-size: 11px;
+                        color: root.pc_access_enabled ? #a7ffdb : #d7bcff;
+                    }
+                }
+            }
+
+            Rectangle {
+                height: 140px;
+                border-radius: 24px;
+                background: @linear-gradient(180deg, #071225 0%, #0a223a 100%);
+                border-width: 1px;
+                border-color: #00d4ff22;
+
+                VerticalLayout {
+                    anchors.fill: parent;
+                    margin: 18px;
+                    spacing: 10px;
+
+                    Text {
+                        text: "SYSTEM STATUS";
+                        font-size: 11px;
+                        color: #80d6ff;
+                        letter-spacing: 2px;
+                    }
+
+                    ZStack {
+                        anchors.fill: parent;
+                        Rectangle {
+                            anchors.fill: parent;
+                            border-radius: 18px;
+                            background: #04111b;
+                        }
+                        // Speaker wave animation (visible when speaking)
+                        Rectangle {
+                            width: 220px + (root.is_speaking ? 20px : 0);
+                            height: 220px + (root.is_speaking ? 20px : 0);
+                            border-radius: 110px;
+                            border-width: 1px;
+                            border-color: root.is_speaking ? #5cffb2 : transparent;
+                            anchors.center_in: parent;
+                            opacity: root.is_speaking ? 0.6 - (root.pulse / 100.0) : 0;
+                        }
+                        // Second wave
+                        Rectangle {
+                            width: 260px + (root.is_speaking ? 30px : 0);
+                            height: 260px + (root.is_speaking ? 30px : 0);
+                            border-radius: 130px;
+                            border-width: 1px;
+                            border-color: root.is_speaking ? #5cffb2 : transparent;
+                            anchors.center_in: parent;
+                            opacity: root.is_speaking ? 0.3 - (root.pulse / 200.0) : 0;
+                        }
+                        Rectangle {
+                            width: 184px;
+                            height: 184px;
+                            border-radius: 92px;
+                            border-width: 1px;
+                            border-color: #00d4ff33;
+                            anchors.center_in: parent;
+                            opacity: 0.95;
+                        }
+                        Rectangle {
+                            width: 120px;
+                            height: 120px;
+                            border-radius: 60px;
+                            background: root.is_speaking ? @radial-gradient(circle, #1dff99 0%, #00b366 100%) : @radial-gradient(circle, #0a324b 0%, #003759 100%);
+                            anchors.center_in: parent;
+                        }
+                        Text {
+                            text: root.is_speaking ? "🔊 SPEAKING" : (root.system_muted ? "SILENCED" : "READY");
+                            font-size: root.is_speaking ? 18px : 24px;
+                            font-weight: bold;
+                            color: root.is_speaking ? #ffffff : (root.system_muted ? #ff9cb0 : #98fbff);
+                            anchors.center_in: parent;
+                        }
+                    }
+                }
+            }
+
+            HorizontalLayout {
+                spacing: 16px;
+                TouchArea {
+                    clicked => {
+                        root.system_muted = !root.system_muted;
+                        root.mute_pressed();
+                    }
+                    Rectangle {
+                        width: 298px;
+                        height: 62px;
+                        border-radius: 18px;
+                        background: root.system_muted ? #1f0f1b : #002b42;
+                        border-width: 1px;
+                        border-color: #00d4ff44;
+                        drop-shadow-blur: 18px;
+                        drop-shadow-color: #00d4ff22;
+                        Text {
+                            anchors.center_in: parent;
+                            text: root.system_muted ? "UNMUTE SYSTEM" : "MUTE SYSTEM";
+                            font-size: 15px;
+                            font-weight: bold;
+                            color: white;
+                        }
+                    }
+                }
+                TouchArea {
+                    clicked => {
+                        root.pc_access_enabled = !root.pc_access_enabled;
+                        root.access_pc_pressed();
+                    }
+                    Rectangle {
+                        width: 298px;
+                        height: 62px;
+                        border-radius: 18px;
+                        background: root.pc_access_enabled ? #073022 : #2f1033;
+                        border-width: 1px;
+                        border-color: root.pc_access_enabled ? #5cffb2 : #b57dff;
+                        drop-shadow-blur: 18px;
+                        drop-shadow-color: #00d4ff22;
+                        Text {
+                            anchors.center_in: parent;
+                            text: root.pc_access_enabled ? "DISABLE PC ACCESS" : "ENABLE PC ACCESS";
+                            font-size: 15px;
+                            font-weight: bold;
+                            color: white;
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                height: 1px;
+                background: #00cdff44;
+            }
+
+            HorizontalLayout {
+                spacing: 16px;
+                Rectangle {
+                    width: 224px;
+                    height: 116px;
+                    border-radius: 20px;
+                    background: #06142b;
+                    border-width: 1px;
+                    border-color: #00d4ff22;
+                    VerticalLayout {
+                        anchors.fill: parent;
+                        margin: 16px;
+                        spacing: 8px;
+                        Text { text: "COMMAND"; font-size: 11px; color: #8ce1ff; }
+                        Text { text: root.system_muted ? "Audio channels muted" : "Audio channels enabled"; font-size: 15px; font-weight: bold; color: root.system_muted ? #ff9cb0 : #c9ffff; }
+                        Text { text: root.pc_access_enabled ? "Remote shell permitted" : "Remote shell blocked"; font-size: 11px; color: #9cd4ff; wrap: true; }
+                    }
+                }
+                Rectangle {
+                    width: 224px;
+                    height: 116px;
+                    border-radius: 20px;
+                    background: #06142b;
+                    border-width: 1px;
+                    border-color: #00d4ff22;
+                    VerticalLayout {
+                        anchors.fill: parent;
+                        margin: 16px;
+                        spacing: 8px;
+                        Text { text: "SYSTEM"; font-size: 11px; color: #8ce1ff; }
+                        Text { text: "CORE STAGE"; font-size: 15px; font-weight: bold; color: #c9ffff; }
+                        Text { text: "Secure shell ready • GPU throttle normal"; font-size: 11px; color: #9cd4ff; wrap: true; }
+                    }
+                }
+            }
+
+            Rectangle {
+                height: 1px;
+                background: #00cdff44;
+            }
+
+            Text {
+                text: "Rust + Slint UI • Neon glass shell • CSS-inspired glow";
+                color: #9cd4ff;
+                font-size: 11px;
+                opacity: 0.72;
+                horizontal-alignment: center;
+            }
+        }
+    }
+}
