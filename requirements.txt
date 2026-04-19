@@ -1,0 +1,16 @@
+# Core UI
+slint==0.5.0
+
+# Voice Recognition & TTS
+vosk==0.3.45
+sounddevice==0.4.6
+pyttsx3==2.90
+
+# AI & Backend
+requests==2.31.0
+
+# Configuration
+pyyaml==6.0
+
+# Optional: open-interpreter for extended AI capabilities
+open-interpreter==0.2.0
