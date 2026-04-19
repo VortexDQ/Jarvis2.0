@@ -1,0 +1,84 @@
+{
+  "version": "1.0.0",
+  "ui": {
+    "enabled_on_startup": false,
+    "theme": "dark",
+    "always_on_top": true,
+    "window_opacity": 1.0
+  },
+  "voice": {
+    "enabled": true,
+    "wake_word": "jarvis",
+    "sample_rate": 16000,
+    "tts_enabled": true,
+    "tts_voice_name": "",
+    "auto_start_on_launch": true,
+    "vosk_model_path": "./voice_model"
+  },
+  "pc_access": {
+    "enabled_on_startup": false,
+    "allow_file_operations": false,
+    "allow_shell_commands": false,
+    "allow_system_info": true,
+    "allowed_commands": [],
+    "blocked_commands": [
+      "format",
+      "del /s",
+      "rm -rf",
+      "shutdown /s",
+      "poweroff",
+      "reboot",
+      "halt",
+      "kill -9",
+      "sudo"
+    ]
+  },
+  "ai": {
+    "provider": "ollama",
+    "model": "qwen2.5:7b-instruct",
+    "api_base": "http://127.0.0.1:11434",
+    "api_key": "",
+    "temperature": 0.7,
+    "max_tokens": 2048,
+    "timeout": 30
+  },
+  "security": {
+    "enable_blocklist": true,
+    "enable_auto_backups": true,
+    "max_backup_count": 5,
+    "log_all_commands": true,
+    "require_confirmation_for_system_access": true,
+    "blocklist": [
+      "delete all",
+      "remove all",
+      "format disk",
+      "wipe drive",
+      "destroy",
+      "erase everything",
+      "hack",
+      "crack",
+      "malware",
+      "virus",
+      "exploit",
+      "password",
+      "credit card",
+      "social security",
+      "bank account",
+      "disable antivirus",
+      "disable firewall",
+      "disable security",
+      "scan networks",
+      "flood networks",
+      "ddos",
+      "spam"
+    ]
+  },
+  "user": {
+    "full_name": "",
+    "preferred_name": "",
+    "pronouns": "",
+    "role": "",
+    "timezone": "UTC",
+    "language": "en"
+  }
+}
